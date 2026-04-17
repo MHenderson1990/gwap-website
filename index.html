@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MO GWAP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060810;
+      --surface: #0c0f1a;
+      --surface2: #111627;
+      --border: #1a2040;
+      --accent: #0047AB;
+      --accent-bright: #1a6bff;
+      --accent-glow: rgba(0, 71, 171, 0.35);
+      --text: #e8eaf0;
+      --muted: #4a5280;
+      --font-display: 'Anton', sans-serif;
+      --font-body: 'Outfit', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CURSOR */
+    .cursor {
+      width: 10px; height: 10px;
+      background: var(--accent-bright);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s;
+      box-shadow: 0 0 12px var(--accent-bright);
+    }
+    .cursor-ring {
+      width: 32px; height: 32px;
+      border: 1px solid var(--accent-bright);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.3s ease;
+      opacity: 0.4;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 56px;
+      background: linear-gradient(to bottom, rgba(6,8,16,0.98), transparent);
+      backdrop-filter: blur(2px);
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: 6px;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent-bright); }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent-bright); }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center;
+      padding: 120px 56px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(0,71,171,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 20%, rgba(26,107,255,0.08) 0%, transparent 45%);
+    }
+    .hero-lines {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,71,171,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,71,171,0.06) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse at 30% 50%, black 20%, transparent 70%);
+    }
+    .hero-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,71,171,0.12) 0%, transparent 70%);
+      left: -100px; top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 900px; }
+    .hero-eyebrow {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+    }
+    .hero-eyebrow-line {
+      width: 40px; height: 1px;
+      background: var(--accent-bright);
+      box-shadow: 0 0 8px var(--accent-bright);
+    }
+    .hero-eyebrow span {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent-bright);
+      font-weight: 500;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(72px, 12vw, 180px);
+      line-height: 0.92;
+      letter-spacing: 1px;
+      color: var(--text);
+      margin-bottom: 32px;
+    }
+    .hero-title .blue { color: var(--accent-bright); }
+    .hero-title .outline {
+      -webkit-text-stroke: 2px rgba(255,255,255,0.15);
+      color: transparent;
+    }
+    .hero-sub {
+      font-size: 14px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      font-weight: 300;
+      max-width: 460px;
+      margin-bottom: 48px;
+      line-height: 1.8;
+    }
+    .hero-actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 36px;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 24px var(--accent-glow);
+    }
+    .btn-primary:hover {
+      background: var(--accent-bright);
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px var(--accent-glow);
+    }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 13px 36px;
+      background: none;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--accent-bright); color: var(--accent-bright); }
+
+    /* DIVIDER */
+    hr.divider { border: none; border-top: 1px solid var(--border); margin: 0 56px; }
+
+    /* SECTION BASE */
+    section { padding: 100px 56px; }
+    .section-label {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 16px;
+    }
+    .section-label-line { width: 28px; height: 1px; background: var(--accent-bright); }
+    .section-label span {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent-bright);
+      font-weight: 500;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(44px, 6vw, 88px);
+      letter-spacing: 1px;
+      line-height: 0.95;
+      margin-bottom: 64px;
+      color: var(--text);
+    }
+
+    /* MUSIC PLAYER */
+    #player { background: var(--surface); }
+    .player-layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 64px;
+      align-items: start;
+    }
+    .tracklist { list-style: none; }
+    .tracklist li {
+      display: flex; align-items: center; gap: 20px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .tracklist li::before {
+      content: '';
+      position: absolute; left: -56px;
+      width: 0; height: 100%;
+      background: var(--accent-glow);
+      transition: width 0.3s;
+    }
+    .tracklist li:hover::before, .tracklist li.active::before { width: 3px; }
+    .tracklist li:hover, .tracklist li.active { color: var(--text); padding-left: 8px; }
+    .tracklist li.active { color: var(--accent-bright); }
+    .track-num {
+      font-size: 11px; color: var(--muted);
+      width: 28px; text-align: right;
+      font-weight: 300; letter-spacing: 1px;
+    }
+    .tracklist li.active .track-num { color: var(--accent-bright); }
+    .track-info { flex: 1; }
+    .track-name { font-size: 14px; font-weight: 500; letter-spacing: 0.5px; }
+    .track-album { font-size: 11px; color: var(--muted); margin-top: 2px; font-weight: 300; }
+    .track-duration { font-size: 11px; color: var(--muted); font-weight: 300; }
+    .track-badge {
+      font-size: 9px; letter-spacing: 2px;
+      padding: 3px 10px;
+      border: 1px solid var(--accent);
+      color: var(--accent-bright);
+      text-transform: uppercase;
+      font-weight: 500;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    /* PLAYER CONTROLS */
+    .player-controls { position: sticky; top: 100px; }
+    .player-art {
+      width: 100%; aspect-ratio: 1;
+      background: linear-gradient(135deg, #0a0f2e, #060810);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 28px;
+      position: relative; overflow: hidden;
+    }
+    .player-art::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 40% 40%, rgba(0,71,171,0.2), transparent 60%);
+    }
+    .player-art-inner {
+      position: relative; z-index: 1;
+      text-align: center;
+    }
+    .vinyl-wrap {
+      width: 140px; height: 140px;
+      margin: 0 auto 0;
+      position: relative;
+    }
+    .vinyl {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(#080c20, #111827, #080c20, #111827, #080c20);
+      animation: spin 5s linear infinite;
+      animation-play-state: paused;
+      position: relative;
+    }
+    .vinyl.playing { animation-play-state: running; }
+    .vinyl::after {
+      content: '';
+      position: absolute; inset: 32%;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .now-playing-info { margin-bottom: 20px; }
+    .np-track { font-size: 16px; font-weight: 500; letter-spacing: 1px; margin-bottom: 4px; }
+    .np-album { font-size: 11px; color: var(--muted); letter-spacing: 1px; font-weight: 300; }
+
+    .progress-wrap { margin-bottom: 24px; }
+    .progress-bar {
+      width: 100%; height: 2px;
+      background: var(--border);
+      margin-bottom: 8px; cursor: pointer; position: relative;
+    }
+    .progress-fill {
+      height: 100%; background: var(--accent-bright);
+      width: 0%; transition: width 0.5s linear; pointer-events: none;
+      box-shadow: 0 0 8px var(--accent-bright);
+    }
+    .progress-times {
+      display: flex; justify-content: space-between;
+      font-size: 10px; color: var(--muted); font-weight: 300; letter-spacing: 1px;
+    }
+
+    .controls-row {
+      display: flex; align-items: center; justify-content: center; gap: 20px;
+      margin-bottom: 20px;
+    }
+    .ctrl-btn {
+      background: none; border: none;
+      color: var(--muted); cursor: pointer; font-size: 16px;
+      transition: color 0.2s; padding: 8px;
+      display: flex; align-items: center;
+    }
+    .ctrl-btn:hover { color: var(--text); }
+    .ctrl-btn.play {
+      width: 56px; height: 56px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      color: var(--accent-bright); font-size: 18px;
+      justify-content: center;
+      box-shadow: 0 0 20px var(--accent-glow);
+      transition: all 0.2s;
+    }
+    .ctrl-btn.play:hover {
+      background: var(--accent); color: #fff;
+      box-shadow: 0 0 36px var(--accent-glow);
+    }
+
+    .volume-row { display: flex; align-items: center; gap: 12px; }
+    .volume-row span { font-size: 10px; color: var(--muted); letter-spacing: 1px; font-weight: 300; }
+    input[type=range] {
+      flex: 1; -webkit-appearance: none;
+      height: 2px; background: var(--border); outline: none; cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px; height: 12px; border-radius: 50%; background: var(--accent-bright);
+      box-shadow: 0 0 6px var(--accent-bright);
+    }
+
+    /* RELEASES */
+    #releases { background: var(--bg); }
+    .releases-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 20px;
+      overflow: hidden;
+      align-items: start;
+    }
+    .release-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      min-width: 0;
+      align-self: start;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .release-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(0,71,171,0.2);
+    }
+    .release-art {
+      width: 100%; aspect-ratio: 1;
+      background: linear-gradient(135deg, #0a0f2e, #060810);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 52px;
+      color: rgba(0,71,171,0.3); letter-spacing: 2px;
+      position: relative; overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+    .release-art::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(6,8,16,0.6), transparent 50%);
+    }
+    .release-art-glow {
+      position: absolute;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,71,171,0.3), transparent);
+      top: 30%; left: 30%;
+    }
+    .release-info { padding: 20px; }
+    .release-year { font-size: 10px; color: var(--accent-bright); letter-spacing: 3px; margin-bottom: 6px; font-weight: 500; }
+    .release-title { font-family: var(--font-display); font-size: 22px; letter-spacing: 1px; margin-bottom: 4px; }
+    .release-type { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-weight: 300; }
+
+    /* BIO */
+    #bio {
+      background: var(--surface);
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .bio-photo {
+      aspect-ratio: 3/4;
+      background: linear-gradient(160deg, #0a0f2e, #060810);
+      border: 1px solid var(--border);
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 100px;
+      color: rgba(0,71,171,0.08);
+    }
+    .bio-photo::before {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 60%;
+      background: linear-gradient(to top, var(--surface), transparent);
+    }
+    .bio-photo-glow {
+      position: absolute;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,71,171,0.15), transparent);
+      top: 20%; left: 10%;
+    }
+    .bio-tag { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 300; margin-bottom: 20px; }
+    .bio-name { font-family: var(--font-display); font-size: clamp(36px, 4vw, 56px); line-height: 1; margin-bottom: 32px; }
+    .bio-name span { color: var(--accent-bright); }
+    .bio-text { color: #8a90b0; font-size: 14px; line-height: 1.9; margin-bottom: 16px; font-weight: 300; }
+    .bio-divider { width: 100%; height: 1px; background: var(--border); margin: 36px 0; }
+    .bio-stats { display: flex; gap: 48px; }
+    .bio-stat-num { font-family: var(--font-display); font-size: 44px; color: var(--accent-bright); line-height: 1; }
+    .bio-stat-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-top: 4px; font-weight: 300; text-transform: uppercase; }
+
+    /* BOOKING */
+    #booking { background: var(--bg); }
+    .booking-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+    .booking-info-title {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 4vw, 56px);
+      line-height: 1.05; margin-bottom: 20px;
+    }
+    .booking-info-title span { color: var(--accent-bright); }
+    .booking-info p { color: var(--muted); margin-bottom: 40px; line-height: 1.9; font-weight: 300; font-size: 14px; }
+    .contact-item {
+      display: flex; gap: 16px;
+      padding: 18px 0; border-bottom: 1px solid var(--border);
+      transition: border-color 0.2s;
+    }
+    .contact-item:hover { border-color: var(--accent); }
+    .contact-icon { color: var(--accent-bright); font-size: 14px; margin-top: 3px; }
+    .contact-label { font-size: 9px; letter-spacing: 3px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; font-weight: 500; }
+    .contact-value { font-size: 13px; letter-spacing: 0.5px; font-weight: 300; }
+
+    .booking-form { display: flex; flex-direction: column; gap: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+    .form-group input, .form-group textarea, .form-group select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 14px; font-weight: 300;
+      padding: 14px 16px; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      resize: vertical;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .form-group select option { background: var(--surface); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .submit-btn {
+      padding: 16px 40px;
+      background: var(--accent); border: none; color: #fff;
+      font-family: var(--font-body); font-size: 12px; font-weight: 500;
+      letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      align-self: flex-start;
+      box-shadow: 0 0 24px var(--accent-glow);
+    }
+    .submit-btn:hover {
+      background: var(--accent-bright);
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px var(--accent-glow);
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 56px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface);
+    }
+    .footer-logo { font-family: var(--font-display); font-size: 32px; letter-spacing: 6px; color: var(--text); }
+    .footer-logo span { color: var(--accent-bright); }
+    .social-links { display: flex; gap: 28px; }
+    .social-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      font-weight: 500; transition: color 0.2s;
+    }
+    .social-links a:hover { color: var(--accent-bright); }
+    .footer-copy { font-size: 10px; color: var(--muted); letter-spacing: 1px; font-weight: 300; }
+
+    /* SCROLL ANIMATION */
+    .fade-up { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 960px) {
+  nav { padding: 20px 24px; }
+  .nav-links { display: none; }
+  section { padding: 70px 24px; }
+  hr.divider { margin: 0 24px; }
+  #hero { padding: 100px 24px 60px; }
+  .player-layout { grid-template-columns: 1fr; }
+  #bio { grid-template-columns: 1fr; }
+  .bio-photo { display: flex; width: 100%; aspect-ratio: 3/4; }
+  .booking-layout { grid-template-columns: 1fr; }
+  .releases-grid { grid-template-columns: repeat(2, 1fr); }
+  footer { padding: 40px 24px; flex-direction: column; gap: 24px; text-align: center; }
+}
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#hero" class="nav-logo">MO<span>GWAP</span></a>
+    <ul class="nav-links">
+      <li><a href="#player">Music</a></li>
+      <li><a href="#releases">Releases</a></li>
+      <li><a href="#bio">About</a></li>
+      <li><a href="#booking">Booking</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <div class="hero-eyebrow-line"></div>
+        <span>Official Site &nbsp;/&nbsp; Est. 2009</span>
+      </div>
+      <h1 class="hero-title">
+        <span class="blue">MO</span><br>
+        <span class="outline">GWAP</span>
+      </h1>
+      <p class="hero-sub">Hip Hop/R&B &nbsp;·&nbsp; Latest Release: TEXAS PLATES (2026)</p>
+      <div class="hero-actions">
+        <a href="#player" class="btn-primary">▶ &nbsp;Listen Now</a>
+        <a href="#booking" class="btn-ghost">Book a Show</a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- MUSIC PLAYER -->
+  <section id="player">
+  <div class="section-label fade-up"><div class="section-label-line"></div><span>02 — Listen</span></div>
+  <h2 class="section-title fade-up">Latest<br>Tracks</h2>
+  <div class="player-layout">
+    <ul class="tracklist" id="tracklist"></ul>
+    <div class="player-controls">
+      <div class="player-art">
+        <img src="texas.png" alt="Texas Plates" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"/>
+        <div class="vinyl-wrap" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
+          <div class="vinyl" id="vinyl"></div>
+        </div>
+      </div>
+      <div class="now-playing-info">
+        <div class="np-track" id="npTrack">Track Title</div>
+        <div class="np-album" id="npAlbum">Album · 2025</div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-times">
+          <span id="timeElapsed">0:00</span>
+          <span id="timeDuration">0:00</span>
+        </div>
+      </div>
+      <div class="controls-row">
+        <button class="ctrl-btn" id="btnShuffle" title="Shuffle">⇄</button>
+        <button class="ctrl-btn" id="btnPrev" title="Previous">⏮</button>
+        <button class="ctrl-btn play" id="btnPlay" title="Play">▶</button>
+        <button class="ctrl-btn" id="btnNext" title="Next">⏭</button>
+        <button class="ctrl-btn" id="btnRepeat" title="Repeat">↺</button>
+      </div>
+      <div class="volume-row">
+        <span>VOL</span>
+        <input type="range" id="volumeSlider" min="0" max="100" value="80"/>
+        <span id="volVal">80</span>
+      </div>
+    </div>
+  </div>
+</section>
+  <hr class="divider">
+
+  <!-- RELEASES -->
+  <section id="releases">
+    <div class="section-label fade-up"><div class="section-label-line"></div><span>03 — Discography</span></div>
+    <h2 class="section-title fade-up">Releases</h2>
+    <div class="releases-grid">
+      <div class="release-card fade-up">
+       <div class="release-art"><img src="texas.png" alt="Texas Plates" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"/></div>
+        <div class="release-info">
+          <div class="release-year">2026</div>
+          <div class="release-title">TEXAS PLATES</div>
+          <div class="release-type">EP · 6 tracks</div>
+        </div>
+      </div>
+      <div class="release-card fade-up">
+        <div class="release-art"><img src="heartbreak.png" alt="M.G. Heartbreak" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"/></div>
+        <div class="release-info">
+          <div class="release-year">2024</div>
+          <div class="release-title">M.G. Heartbreak</div>
+          <div class="release-type">Album · 16 tracks</div>
+        </div>
+      </div>
+      <div class="release-card fade-up">
+        <div class="release-art"><img src="yin.png" alt="Yin & Yang" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"/></div>
+        <div class="release-info">
+          <div class="release-year">2024</div>
+          <div class="release-title">Yin & Yang</div>
+          <div class="release-type">Album · 17 tracks</div>
+        </div>
+      </div>
+    <div class="release-card fade-up">
+     <div class="release-art"><img src="meta.png" alt="Metamorphosis" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"/></div>
+      <div class="release-info">
+        <div class="release-year">2020</div>
+        <div class="release-title">Metamorphosis</div>
+        <div class="release-type">Album · 15 tracks</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- BIO -->
+  <section id="bio">
+    <div class="bio-photo fade-up">
+  <img src="gwap.jpg" alt="Mo Gwap" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"/>
+</div>
+    <div class="fade-up">
+      <div class="section-label"><div class="section-label-line"></div><span>04 — About</span></div>
+      <h2 class="bio-name" style="margin-top:16px;">MO<span>GWAP</span></h2>
+      <p class="bio-tag">Hip Hop/R&B · Dallas,TX</p>
+      <p class="bio-text">Born and raised in Dallas, TX, Mo Gwap has been crafting his sound since 2009. 
+                          Blending hip-hop and R&B into something uniquely his own, 
+                          Mo Gwap draws inspiration from the greats — New Edition, Earth Wind & Fire, Dru Hill, N'Sync, UGK, Drake, J. Cole, Doja Cat and Chris Brown, 
+                          just to name a few — while carving out a lane that's entirely his. His music is evolving into a grown and sexy sound 
+                          built for late nights and good energy. When you press play, expect to feel good, stay chill, and ride the vibe.</p>
+
+      <div class="bio-divider"></div>
+      <div class="bio-stats">
+        <div>
+          <div class="bio-stat-num">17</div>
+          <div class="bio-stat-label">Years Active</div>
+        </div>
+        <div>
+          <div class="bio-stat-num">5</div>
+          <div class="bio-stat-label">Releases</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- BOOKING -->
+  <section id="booking">
+  <div class="section-label fade-up"><div class="section-label-line"></div><span>05 — Contact</span></div>
+  <h2 class="section-title fade-up">Book &<br>Contact</h2>
+  <div class="booking-layout">
+    <div class="fade-up">
+      <div class="booking-info-title">Let's Make<br><span>Something.</span></div>
+      <p>Available for live performances, festivals, private events, licensing deals, and collaborations. Response time is typically within 48 hours.</p>
+      <div class="contact-item">
+        <div class="contact-icon">✉</div>
+        <div>
+          <div class="contact-label">Booking</div>
+          <div class="contact-value">mogwapbooking@gmail.com</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">◎</div>
+        <div>
+          <div class="contact-label">Based In</div>
+          <div class="contact-value">Dallas, TX</div>
+        </div>
+      </div>
+    </div>
+    <form class="booking-form fade-up" name="booking" method="POST" data-netlify="true">
+  <input type="hidden" name="form-name" value="booking"/>
+  <div class="form-row">
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text" name="first-name" placeholder="Jane" required/>
+    </div>
+    <div class="form-group">
+      <label>Last Name</label>
+      <input type="text" name="last-name" placeholder="Smith" required/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Email</label>
+    <input type="email" name="email" placeholder="jane@venue.com" required/>
+  </div>
+  <div class="form-group">
+    <label>Inquiry Type</label>
+    <select name="inquiry-type" required>
+      <option value="">Select type...</option>
+      <option>Live Performance</option>
+      <option>Festival / Event</option>
+      <option>Press / Media</option>
+      <option>Licensing</option>
+      <option>Collaboration</option>
+      <option>Other</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label>Venue / Company</label>
+      <input type="text" name="venue" placeholder="Venue name"/>
+    </div>
+    <div class="form-group">
+      <label>Event Date</label>
+      <input type="date" name="event-date"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Message</label>
+    <textarea name="message" rows="5" placeholder="Tell me about your event, budget range, etc..." required></textarea>
+  </div>
+  <button type="submit" class="submit-btn">Send Inquiry →</button>
+</form>
+  </div>
+</section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="social-links">
+  <a href="https://www.instagram.com/mo_gwap_" target="_blank">Instagram</a>
+  <a href="https://www.tiktok.com/@gwappa214" target="_blank">TikTok</a>
+  <a href="https://open.spotify.com/artist/4WK6uiTfCkrUWAhYyHMar4?si=ZFsehYF_Sk-ZzFUf9rsutw" target="_blank">Spotify</a>
+  <a href="https://music.apple.com/us/artist/mo-gwap/1347984691" target="_blank">Apple Music</a>
+</div>
+    <div class="footer-copy">© 2026 Mo Gwap. All rights reserved.</div>
+  </footer>
+
+  <script>
+    // ─── CURSOR ───────────────────────────────────────────────
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+      ring.style.left = e.clientX + 'px';
+      ring.style.top = e.clientY + 'px';
+    });
+
+    // ─── TRACKS ───────────────────────────────────────────────
+    // Replace src with your real audio file paths e.g. "./audio/track1.mp3"
+    const tracks = [
+      { title: "SWANG", album: "TEXAS PLATES EP", src: "SWANG.wav", duration: "3:05", badge: "NEW" },
+      { title: "MILF",  album: "TEXAS PLATES EP", src: "MILF.wav",  duration: "3:37", badge: "" },
+      { title: "PLAYS", album: "TEXAS PLATES EP", src: "PLAYS.wav", duration: "3:03", badge: "" },
+      { title: "DOWN",  album: "TEXAS PLATES EP", src: "DOWN.wav",  duration: "3:05", badge: "" },
+      { title: "WORK",  album: "TEXAS PLATES EP", src: "WORK.wav",  duration: "3:27", badge: "" },
+    ];
+
+    let current = 0, isPlaying = false, shuffle = false, repeat = false;
+    const audio = new Audio();
+
+    const $ = id => document.getElementById(id);
+    const tracklist = $('tracklist'), btnPlay = $('btnPlay'), btnPrev = $('btnPrev'),
+          btnNext = $('btnNext'), btnShuffle = $('btnShuffle'), btnRepeat = $('btnRepeat'),
+          vinyl = $('vinyl'), npTrack = $('npTrack'), npAlbum = $('npAlbum'),
+          progressFill = $('progressFill'), timeElapsed = $('timeElapsed'),
+          timeDuration = $('timeDuration'), progressBar = $('progressBar'),
+          volumeSlider = $('volumeSlider'), volVal = $('volVal');
+
+    const fmt = s => isNaN(s) ? '0:00' : `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+
+    function renderList() {
+      tracklist.innerHTML = '';
+      tracks.forEach((t, i) => {
+        const li = document.createElement('li');
+        li.className = i === current ? 'active' : '';
+        li.innerHTML = `
+          <span class="track-num">${i === current && isPlaying ? '▶' : String(i+1).padStart(2,'0')}</span>
+          <div class="track-info">
+            <div class="track-name">${t.title}</div>
+            <div class="track-album">${t.album}</div>
+          </div>
+          <span class="track-duration">${t.duration}</span>
+          ${t.badge ? `<span class="track-badge">${t.badge}</span>` : ''}
+        `;
+        li.addEventListener('click', () => { current = i; load(); play(true); });
+        tracklist.appendChild(li);
+      });
+    }
+
+    function load() {
+      const t = tracks[current];
+      npTrack.textContent = t.title;
+      npAlbum.textContent = t.album;
+      timeDuration.textContent = t.duration;
+      progressFill.style.width = '0%';
+      timeElapsed.textContent = '0:00';
+      if (t.src) { audio.src = t.src; audio.load(); }
+      renderList();
+    }
+
+    let simInt = null, simEl = 0;
+    function simProgress() {
+      clearInterval(simInt);
+      simInt = setInterval(() => {
+        if (!isPlaying) return;
+        simEl = Math.min(simEl + 1, 240);
+        progressFill.style.width = (simEl / 240 * 100) + '%';
+        timeElapsed.textContent = fmt(simEl);
+        if (simEl >= 240) { clearInterval(simInt); next(); }
+      }, 1000);
+    }
+
+    function play(force = null) {
+      if (!tracks[current].src) {
+        if (force === true || !isPlaying) {
+          isPlaying = true; btnPlay.textContent = '⏸'; vinyl.classList.add('playing'); simProgress();
+        } else {
+          isPlaying = false; btnPlay.textContent = '▶'; vinyl.classList.remove('playing');
+        }
+        renderList(); return;
+      }
+      if (force === true || audio.paused) {
+        audio.play(); isPlaying = true; btnPlay.textContent = '⏸'; vinyl.classList.add('playing');
+      } else {
+        audio.pause(); isPlaying = false; btnPlay.textContent = '▶'; vinyl.classList.remove('playing');
+      }
+      renderList();
+    }
+
+    function next() {
+      simEl = 0;
+      current = shuffle ? Math.floor(Math.random()*tracks.length) : repeat ? current : (current+1)%tracks.length;
+      load(); if (isPlaying) play(true);
+    }
+    function prev() {
+      simEl = 0;
+      current = (current - 1 + tracks.length) % tracks.length;
+      load(); if (isPlaying) play(true);
+    }
+
+    btnPlay.addEventListener('click', () => play());
+    btnNext.addEventListener('click', next);
+    btnPrev.addEventListener('click', prev);
+    btnShuffle.addEventListener('click', () => { shuffle = !shuffle; btnShuffle.style.color = shuffle ? 'var(--accent-bright)' : ''; });
+    btnRepeat.addEventListener('click', () => { repeat = !repeat; btnRepeat.style.color = repeat ? 'var(--accent-bright)' : ''; });
+
+    audio.addEventListener('timeupdate', () => {
+      if (!audio.duration) return;
+      progressFill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+      timeElapsed.textContent = fmt(audio.currentTime);
+      timeDuration.textContent = fmt(audio.duration);
+    });
+    audio.addEventListener('ended', next);
+
+    progressBar.addEventListener('click', e => {
+      const pct = (e.clientX - progressBar.getBoundingClientRect().left) / progressBar.offsetWidth;
+      if (audio.duration) { audio.currentTime = pct * audio.duration; }
+      else { simEl = Math.floor(pct * 240); progressFill.style.width = (pct*100)+'%'; timeElapsed.textContent = fmt(simEl); }
+    });
+
+    volumeSlider.addEventListener('input', e => { audio.volume = e.target.value/100; volVal.textContent = e.target.value; });
+
+    // ─── SCROLL ANIMATIONS ────────────────────────────────────
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // ─── FORM ─────────────────────────────────────────────────
+    function handleSubmit(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('.submit-btn');
+      btn.textContent = 'Sent! ✓'; btn.style.background = '#1a6bff';
+      setTimeout(() => { btn.textContent = 'Send Inquiry →'; btn.style.background = ''; e.target.reset(); }, 3000);
+    }
+
+    load();
+  </script>
+</body>
+</html>
